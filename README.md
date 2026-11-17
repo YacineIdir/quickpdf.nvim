@@ -147,15 +147,15 @@ renders never pile up.
 
 Code layout:
 
-| Path                              | Role                                          |
-| --------------------------------- | --------------------------------------------- |
-| `lua/quickpdf/init.lua`           | `setup()` and autocommands                    |
-| `lua/quickpdf/config.lua`         | Default options and merging                   |
-| `lua/quickpdf/viewer.lua`         | Per-buffer state, actions, show and hide      |
-| `lua/quickpdf/ui.lua`             | Placeholder buffer, winbar, keymaps           |
-| `lua/quickpdf/daemon.lua`         | Quickshell process lifecycle and IPC calls    |
-| `lua/quickpdf/hyprland.lua`       | `hyprctl` calls: geometry and focus           |
-| `quickshell/pdf_viewer/shell.qml` | Viewer window, rendering and the `pdf` IPC    |
+| Path                              | Role                                     |
+| --------------------------------- | ---------------------------------------- |
+| `lua/quickpdf/init.lua`           | `setup()` and autocommands               |
+| `lua/quickpdf/config.lua`         | Default options and merging              |
+| `lua/quickpdf/viewer.lua`         | Per-buffer state, actions, show and hide |
+| `lua/quickpdf/ui.lua`             | Placeholder buffer, winbar, keymaps      |
+| `lua/quickpdf/daemon.lua`         | Quickshell process lifecycle and IPC     |
+| `lua/quickpdf/hyprland.lua`       | `hyprctl` calls: geometry and focus      |
+| `quickshell/pdf_viewer/shell.qml` | Viewer window, rendering, `pdf` IPC      |
 
 ## Limitations
 
