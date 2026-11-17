@@ -145,6 +145,10 @@ The page is rendered at the exact pixel width it is shown at, so zoom is a
 re-render, not an image scale. Fast repeated key presses are merged in QML so
 renders never pile up.
 
+More diagrams are in [docs/architecture.md](docs/architecture.md), the
+project vocabulary in [GLOSSARY.md](GLOSSARY.md), and design decisions in
+[docs/adr/](docs/adr/).
+
 Code layout:
 
 | Path                              | Role                                     |
