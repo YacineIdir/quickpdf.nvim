@@ -1,0 +1,26 @@
+name: PR title
+
+on:
+  pull_request:
+    branches: [main, develop]
+    # `synchronize` too: a required check must report on every new head.
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-title-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  pr-title:
+    name: pr-title
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Check the title follows Conventional Commits
+        # Passed through the environment, never pasted into the script.
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: .github/scripts/check-pr-title.sh "$TITLE"
