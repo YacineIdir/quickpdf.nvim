@@ -25,15 +25,14 @@ local function open_pdf(opts)
         QUICKPDF_FAKE_TERM_WIDTH = TERM_WIDTH,
         QUICKPDF_FAKE_TERM_HEIGHT = TERM_HEIGHT,
     })
-    return child.lua_get(
+    child.lua(
         [[
-        local options = ...
-        require("quickpdf").setup(options)
+        require("quickpdf").setup(...)
         vim.cmd.edit("tests/fixtures/sample.pdf")
-        return vim.api.nvim_get_current_buf()
         ]],
         { opts or {} }
     )
+    return child.lua_get([[vim.api.nvim_get_current_buf()]])
 end
 
 -- Déclenche l'action `name` sur le tampon `buf`.

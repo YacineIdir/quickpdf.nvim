@@ -28,6 +28,19 @@ function H.new_child_neovim()
     return child
 end
 
+-- Déclare dans le Neovim enfant les variables d'environnement qui pilotent la
+-- sortie des faux exécutables.
+function H.fake_env(child, vars)
+    child.lua(
+        [[
+        for name, value in pairs(...) do
+            vim.env[name] = tostring(value)
+        end
+        ]],
+        { vars }
+    )
+end
+
 -- Liste les appels enregistrés pour `program`, du plus ancien au plus récent.
 -- Chaque appel est la liste exacte de ses arguments, nom du programme inclus.
 function H.calls(child, program)

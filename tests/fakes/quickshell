@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Fake Quickshell: accepts `ipc show`, every `ipc call` and the daemon spawn.
+# $QUICKPDF_FAKE_DAEMON_DEAD=1 makes `ipc show` fail, as when no daemon runs.
+
+set -euo pipefail
+source "$(dirname "$0")/_record.sh"
+quickpdf_record "$@"
+
+for arg in "$@"; do
+    if [ "$arg" = "show" ] && [ "${QUICKPDF_FAKE_DAEMON_DEAD:-}" = "1" ]; then
+        printf 'no instance found\n' >&2
+        exit 1
+    fi
+done

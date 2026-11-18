@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Fake hyprctl: answers the three queries the plugin makes and accepts every
+# dispatch. The terminal window and the viewer window are described by
+# $QUICKPDF_FAKE_TERM_* and the viewer title.
+
+set -euo pipefail
+source "$(dirname "$0")/_record.sh"
+quickpdf_record "$@"
+
+address="${QUICKPDF_FAKE_TERM_ADDRESS:-0x1000}"
+width="${QUICKPDF_FAKE_TERM_WIDTH:-1920}"
+height="${QUICKPDF_FAKE_TERM_HEIGHT:-1080}"
+x="${QUICKPDF_FAKE_TERM_X:-0}"
+y="${QUICKPDF_FAKE_TERM_Y:-0}"
+title="${QUICKPDF_FAKE_VIEWER_TITLE:-quickshell-pdf-viewer}"
+floating="${QUICKPDF_FAKE_VIEWER_FLOATING:-true}"
+
+terminal="{\"address\":\"$address\",\"title\":\"terminal\",\"at\":[$x,$y],\"size\":[$width,$height],\"floating\":false}"
+viewer="{\"address\":\"0x2000\",\"title\":\"$title\",\"at\":[0,0],\"size\":[100,100],\"floating\":$floating}"
+
+case "$1" in
+    activewindow) printf '%s\n' "$terminal" ;;
+    clients)
+        if [ "${QUICKPDF_FAKE_VIEWER_MISSING:-}" = "1" ]; then
+            printf '[%s]\n' "$terminal"
+        else
+            printf '[%s,%s]\n' "$terminal" "$viewer"
+        fi
+        ;;
+    dispatch) printf 'ok\n' ;;
+    *) printf 'ok\n' ;;
+esac
