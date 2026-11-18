@@ -220,6 +220,11 @@ stand-ins for `hyprctl`, `quickshell`, `pdfinfo`, `pgrep` and `kill` first on
 `PATH`, each recording the exact command line it receives so tests can assert
 it. The command exits non-zero as soon as one case fails.
 
+`tests/test_render_e2e.lua` is the exception: it renders real pages with the
+real Quickshell daemon, run headless (`QT_QPA_PLATFORM=offscreen`), and the
+real `pdftoppm`. Only `hyprctl` stays fake. Its cases are skipped when
+`quickshell` or `poppler-utils` is not installed.
+
 ## License
 
 [MIT](LICENSE)
