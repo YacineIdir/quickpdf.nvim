@@ -16,4 +16,7 @@ and, in the same workflow, publishes the rock to LuaRocks. Publishing lives
 in that workflow because a tag pushed with `GITHUB_TOKEN` does not trigger
 other workflows.
 
-Accepted on 2026-11-17, not implemented yet.
+Accepted on 2026-11-17. release-please is set up in
+`.github/workflows/release.yml` with `release-please-config.json`; the first
+release is v0.1.0, and breaking changes bump the minor version while below
+1.0. Publishing to LuaRocks is not implemented yet (#9).
