@@ -1,0 +1,3 @@
+# Keep contributor docs on GitHub but out of downloaded archives.
+/docs export-ignore
+/GLOSSARY.md export-ignore
