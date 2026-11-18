@@ -1,0 +1,4 @@
+{
+  // Agent skills and local npm tooling are not project documentation.
+  "ignores": ["node_modules/**", ".claude/**", ".agents/**", ".codex/**"]
+}

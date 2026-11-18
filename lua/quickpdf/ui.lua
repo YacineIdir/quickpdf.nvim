@@ -48,8 +48,15 @@ function M.winbar(buf, st)
         st.page,
         st.total,
         st.scale * 100,
-        k.next_page, k.prev_page, k.zoom_in, k.zoom_out, k.zoom_reset,
-        k.pan_left, k.pan_down, k.pan_up, k.pan_right
+        k.next_page,
+        k.prev_page,
+        k.zoom_in,
+        k.zoom_out,
+        k.zoom_reset,
+        k.pan_left,
+        k.pan_down,
+        k.pan_up,
+        k.pan_right
     )
 end
 
