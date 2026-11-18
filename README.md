@@ -206,6 +206,20 @@ To work on the plugin, point your plugin manager at your local clone (for
 lazy.nvim, `{ dir = "~/path/to/quickpdf.nvim", opts = {} }`) and restart
 Neovim after each change.
 
+### Tests
+
+```bash
+make test                          # whole suite
+make test TESTS=tests/test_ui.lua  # one file
+```
+
+`make test` clones [mini.nvim](https://github.com/echasnovski/mini.nvim)
+into `deps/` on first run and executes every `tests/test_*.lua` in a headless
+child Neovim. It needs neither Hyprland nor Quickshell: `tests/fakes/` puts
+stand-ins for `hyprctl`, `quickshell`, `pdfinfo`, `pgrep` and `kill` first on
+`PATH`, each recording the exact command line it receives so tests can assert
+it. The command exits non-zero as soon as one case fails.
+
 ## License
 
 [MIT](LICENSE)
