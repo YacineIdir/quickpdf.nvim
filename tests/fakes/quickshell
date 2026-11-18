@@ -1,13 +1,23 @@
 #!/usr/bin/env bash
 # Fake Quickshell: accepts `ipc show`, every `ipc call` and the daemon spawn.
-# $QUICKPDF_FAKE_DAEMON_DEAD=1 makes `ipc show` fail, as when no daemon runs.
+# $QUICKPDF_FAKE_DAEMON_DEAD=1 makes `ipc show` fail until the plugin spawns a
+# daemon, which is how a first open behaves when nothing runs yet.
 
 set -euo pipefail
 source "$(dirname "$0")/_record.sh"
 quickpdf_record "$@"
 
+marker="${QUICKPDF_CALL_LOG:-/dev/null}.daemon"
+
+if [ "${1:-}" != "ipc" ]; then
+    : >"$marker"
+    exit 0
+fi
+
+# The subcommand comes after `ipc -p <config>`, so look for it in every
+# argument rather than at a fixed position.
 for arg in "$@"; do
-    if [ "$arg" = "show" ] && [ "${QUICKPDF_FAKE_DAEMON_DEAD:-}" = "1" ]; then
+    if [ "$arg" = "show" ] && [ "${QUICKPDF_FAKE_DAEMON_DEAD:-}" = "1" ] && [ ! -e "$marker" ]; then
         printf 'no instance found\n' >&2
         exit 1
     fi
