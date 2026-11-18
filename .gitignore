@@ -1,0 +1,6 @@
+.qmlls.ini
+
+# Local npm tooling (markdownlint), not part of the plugin
+node_modules/
+package.json
+package-lock.json
