@@ -159,6 +159,7 @@ Code layout:
 | `lua/quickpdf/ui.lua`             | Placeholder buffer, winbar, keymaps      |
 | `lua/quickpdf/daemon.lua`         | Quickshell process lifecycle and IPC     |
 | `lua/quickpdf/hyprland.lua`       | `hyprctl` calls: geometry and focus      |
+| `lua/quickpdf/process.lua`        | Runs every external program              |
 | `quickshell/pdf_viewer/shell.qml` | Viewer window, rendering, `pdf` IPC      |
 
 ## Limitations

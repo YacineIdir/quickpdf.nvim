@@ -12,6 +12,7 @@
 --   ui        placeholder buffer, winbar, keymaps
 --   daemon    Quickshell process lifecycle + IPC
 --   hyprland  hyprctl calls (geometry, focus)
+--   process   the only place that runs external programs
 
 local config = require("quickpdf.config")
 local daemon = require("quickpdf.daemon")

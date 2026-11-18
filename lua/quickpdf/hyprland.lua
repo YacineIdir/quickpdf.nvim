@@ -1,15 +1,15 @@
 -- Everything that talks to the compositor through `hyprctl`: finding the
 -- terminal, waiting for the viewer window, placing it and handing focus back.
 
+local process = require("quickpdf.process")
+
 local M = {}
 
 -- Must match `FloatingWindow.title` in quickshell/pdf_viewer/shell.qml.
 M.TITLE = "quickshell-pdf-viewer"
 local TITLE_REGEX = "^(" .. M.TITLE .. ")$"
 
-local function run(cmd)
-    return vim.system(cmd, { text = true }):wait()
-end
+local run = process.run
 
 -- The window that has focus right now is the terminal running this nvim.
 function M.active_window()

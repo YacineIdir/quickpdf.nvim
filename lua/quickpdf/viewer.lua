@@ -5,12 +5,13 @@
 local config = require("quickpdf.config")
 local daemon = require("quickpdf.daemon")
 local hyprland = require("quickpdf.hyprland")
+local process = require("quickpdf.process")
 local ui = require("quickpdf.ui")
 
 local M = {}
 
 local function page_count(path)
-    local res = vim.system({ "pdfinfo", path }, { text = true }):wait()
+    local res = process.run({ "pdfinfo", path })
     if res.code == 0 then
         local n = res.stdout:match("Pages:%s*(%d+)")
         if n then
