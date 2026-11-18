@@ -16,6 +16,11 @@ How quickpdf.nvim is put together. Terms are defined in
 Neovim owns the navigation state and decides what to show. The daemon owns
 the viewer and renders pages. The compositor places the viewer.
 
+Each Neovim instance has its own daemon, see
+[ADR 0002](adr/0002-one-daemon-per-neovim-instance.md). It reaches the
+configured Quickshell config through a symlink in Neovim's temp dir, next to
+its render cache, and Neovim removes both on exit.
+
 ```mermaid
 flowchart LR
     %% Who talks to whom, and over what channel
@@ -45,11 +50,11 @@ sequenceDiagram
     participant C as Compositor
 
     N->>N: BufReadCmd *.pdf: placeholder text, page count
-    N->>D: start if not answering IPC
+    N->>D: start on this instance's config path if not answering IPC
     N->>C: geometry of the terminal
     N->>D: open(path, page, width)
     D->>D: render page at width x zoom
-    N->>C: wait for the viewer, then move and resize it
+    N->>C: wait for the viewer of this daemon's pid, then move and resize it
     N->>C: focus the terminal again
     N->>D: key n: gotoPage(page, width)
     D->>D: render, merging fast repeated presses

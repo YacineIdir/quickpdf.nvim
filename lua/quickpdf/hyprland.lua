@@ -7,7 +7,6 @@ local M = {}
 
 -- Must match `FloatingWindow.title` in quickshell/pdf_viewer/shell.qml.
 M.TITLE = "quickshell-pdf-viewer"
-local TITLE_REGEX = "^(" .. M.TITLE .. ")$"
 
 local run = process.run
 
@@ -23,8 +22,10 @@ end
 
 -- The `open` IPC call only confirms QML received the message, not that the
 -- Wayland surface has mapped. Dispatching resize/move/focus before it exists
--- silently no-ops, so poll for it.
-function M.wait_for_viewer(timeout_ms)
+-- silently no-ops, so poll for it. Every Neovim instance has a viewer with the
+-- same title (the window rule matches it), so the window must also belong to
+-- the daemon `pid`; with no pid known, the title alone decides.
+function M.wait_for_viewer(pid, timeout_ms)
     local waited = 0
     while waited < timeout_ms do
         local res = run({ "hyprctl", "clients", "-j" })
@@ -32,7 +33,7 @@ function M.wait_for_viewer(timeout_ms)
             local ok, clients = pcall(vim.json.decode, res.stdout)
             if ok then
                 for _, c in ipairs(clients) do
-                    if c.title == M.TITLE then
+                    if c.title == M.TITLE and (pid == nil or c.pid == pid) then
                         return c
                     end
                 end
@@ -45,18 +46,19 @@ function M.wait_for_viewer(timeout_ms)
 end
 
 -- Fallback when the user has not installed the Hyprland windowrule.
-function M.ensure_floating(client)
-    if client and not client.floating then
-        run({ "hyprctl", "dispatch", "togglefloating", "title:" .. TITLE_REGEX })
+function M.ensure_floating(viewer)
+    if not viewer.floating then
+        run({ "hyprctl", "dispatch", "togglefloating", "address:" .. viewer.address })
     end
 end
 
--- Give the viewer the exact position and size of `win`.
-function M.cover(win)
+-- Give the `viewer` window the exact position and size of `win`.
+function M.cover(viewer, win)
     local x, y = win.at[1], win.at[2]
     local w, h = win.size[1], win.size[2]
-    run({ "hyprctl", "dispatch", "resizewindowpixel", string.format("exact %d %d,title:%s", w, h, TITLE_REGEX) })
-    run({ "hyprctl", "dispatch", "movewindowpixel", string.format("exact %d %d,title:%s", x, y, TITLE_REGEX) })
+    local target = "address:" .. viewer.address
+    run({ "hyprctl", "dispatch", "resizewindowpixel", string.format("exact %d %d,%s", w, h, target) })
+    run({ "hyprctl", "dispatch", "movewindowpixel", string.format("exact %d %d,%s", x, y, target) })
 end
 
 function M.focus(addr)

@@ -47,17 +47,19 @@ function M.show(buf)
         vim.b[buf].quickpdf = st
     end
     daemon.call("open", st.path, st.page, target_width(st))
-    local qs = hyprland.wait_for_viewer(1500)
+    local qs = hyprland.wait_for_viewer(daemon.pid(), 1500)
     if not qs then
         -- Daemon alive but its window was destroyed (closed via the WM):
         -- `open` just toggles visibility on a dead window. Respawn, retry once.
         daemon.restart()
         daemon.call("open", st.path, st.page, target_width(st))
-        qs = hyprland.wait_for_viewer(1500)
+        qs = hyprland.wait_for_viewer(daemon.pid(), 1500)
     end
-    hyprland.ensure_floating(qs)
-    if win then
-        hyprland.cover(win)
+    if qs then
+        hyprland.ensure_floating(qs)
+        if win then
+            hyprland.cover(qs, win)
+        end
     end
     hyprland.focus(st.term_addr)
     -- Without the `no_focus` windowrule Hyprland hands focus to the new

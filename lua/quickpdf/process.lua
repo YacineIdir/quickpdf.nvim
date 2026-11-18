@@ -10,9 +10,10 @@ function M.run(cmd)
     return vim.system(cmd, { text = true }):wait()
 end
 
--- Start `cmd` detached from Neovim and return without waiting.
-function M.spawn(cmd)
-    vim.system(cmd, { detach = true })
+-- Start `cmd` detached from Neovim and return without waiting. `env` adds
+-- variables to the ones Neovim passes on.
+function M.spawn(cmd, env)
+    vim.system(cmd, { detach = true, env = env })
 end
 
 return M

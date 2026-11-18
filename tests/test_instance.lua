@@ -71,16 +71,17 @@ end
 
 T["places its own viewer, not the one of another instance"] = function()
     open_pdf(child, { QUICKPDF_FAKE_OTHER_VIEWER = 1, QUICKPDF_FAKE_VIEWER_FLOATING = "false" })
-    local targets = {}
+    -- Opening shows the viewer more than once; any other target adds a key.
+    local dispatches = {}
     for _, call in ipairs(helpers.calls(child, "hyprctl")) do
         if call[2] == "dispatch" and call[3] ~= "focuswindow" then
-            table.insert(targets, call[3] .. " " .. call[4]:match("[^,]*$"))
+            dispatches[call[3] .. " " .. call[4]:match("[^,]*$")] = true
         end
     end
-    eq(targets, {
-        "togglefloating address:0x2000",
-        "resizewindowpixel address:0x2000",
-        "movewindowpixel address:0x2000",
+    eq(dispatches, {
+        ["togglefloating address:0x2000"] = true,
+        ["resizewindowpixel address:0x2000"] = true,
+        ["movewindowpixel address:0x2000"] = true,
     })
 end
 
