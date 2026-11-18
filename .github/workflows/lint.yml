@@ -75,3 +75,15 @@ jobs:
       - uses: DavidAnson/markdownlint-cli2-action@v25.0.0
         with:
           globs: "**/*.md"
+
+  qmllint:
+    name: qmllint
+    runs-on: ubuntu-24.04
+    # Arch's quickshell package ships the .qmltypes files qmllint needs to
+    # resolve `import Quickshell`; Ubuntu has no Quickshell package.
+    container: archlinux:base
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Install Quickshell and qmllint
+        run: pacman -Syu --noconfirm --needed quickshell qt6-declarative
+      - run: /usr/lib/qt6/bin/qmllint quickshell/pdf_viewer/shell.qml
