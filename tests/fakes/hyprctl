@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Fake hyprctl: answers the three queries the plugin makes and accepts every
 # dispatch. The terminal window and the viewer window are described by
-# $QUICKPDF_FAKE_TERM_* and the viewer title.
+# $QUICKPDF_FAKE_TERM_* and $QUICKPDF_FAKE_VIEWER_*. The viewer belongs to the
+# daemon pid the fake quickshell reports. $QUICKPDF_FAKE_OTHER_VIEWER=1 lists
+# first a viewer of another Neovim instance, same title, another pid.
+# $QUICKPDF_FAKE_VIEWER_PIDS replaces them with one viewer per listed pid.
 
 set -euo pipefail
 source "$(dirname "$0")/_record.sh"
@@ -14,9 +17,21 @@ x="${QUICKPDF_FAKE_TERM_X:-0}"
 y="${QUICKPDF_FAKE_TERM_Y:-0}"
 title="${QUICKPDF_FAKE_VIEWER_TITLE:-quickshell-pdf-viewer}"
 floating="${QUICKPDF_FAKE_VIEWER_FLOATING:-true}"
+pid="${QUICKPDF_FAKE_VIEWER_PID:-${QUICKPDF_FAKE_DAEMON_PID:-4242}}"
 
 terminal="{\"address\":\"$address\",\"title\":\"terminal\",\"at\":[$x,$y],\"size\":[$width,$height],\"floating\":false}"
-viewer="{\"address\":\"0x2000\",\"title\":\"$title\",\"at\":[0,0],\"size\":[100,100],\"floating\":$floating}"
+viewer="{\"address\":\"0x2000\",\"title\":\"$title\",\"pid\":$pid,\"at\":[0,0],\"size\":[100,100],\"floating\":$floating}"
+other="{\"address\":\"0x3000\",\"title\":\"quickshell-pdf-viewer\",\"pid\":999,\"at\":[0,0],\"size\":[100,100],\"floating\":true}"
+if [ "${QUICKPDF_FAKE_OTHER_VIEWER:-}" = "1" ]; then
+    viewer="$other,$viewer"
+fi
+# End-to-end tests run real daemons: one viewer per pid, at address 0x<pid>.
+if [ -n "${QUICKPDF_FAKE_VIEWER_PIDS:-}" ]; then
+    viewer=""
+    for p in $QUICKPDF_FAKE_VIEWER_PIDS; do
+        viewer="${viewer:+$viewer,}{\"address\":\"0x$p\",\"title\":\"$title\",\"pid\":$p,\"at\":[0,0],\"size\":[100,100],\"floating\":$floating}"
+    done
+fi
 
 case "$1" in
     activewindow) printf '%s\n' "$terminal" ;;

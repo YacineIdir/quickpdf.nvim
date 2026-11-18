@@ -46,6 +46,9 @@ end
 function H.calls(child, program)
     local log = child.lua_get([[vim.env.QUICKPDF_CALL_LOG]])
     local calls = {}
+    if vim.fn.filereadable(log) == 0 then
+        return calls
+    end
     for _, line in ipairs(vim.fn.readfile(log)) do
         local fields = vim.split(line, " ", { trimempty = true })
         if fields[1] == program then
@@ -57,6 +60,19 @@ function H.calls(child, program)
         end
     end
     return calls
+end
+
+-- Liste les chemins de config passés à `-p`, un par appel à quickshell.
+function H.config_paths(child)
+    local paths = {}
+    for _, call in ipairs(H.calls(child, "quickshell")) do
+        for i, arg in ipairs(call) do
+            if arg == "-p" then
+                table.insert(paths, call[i + 1])
+            end
+        end
+    end
+    return paths
 end
 
 return H

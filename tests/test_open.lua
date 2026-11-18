@@ -8,7 +8,8 @@ local helpers = dofile("tests/helpers.lua")
 local child = helpers.new_child_neovim()
 local eq = MiniTest.expect.equality
 
-local TITLE_MATCH = "title:^(quickshell-pdf-viewer)$"
+-- Address of the viewer window the fake hyprctl lists for this instance.
+local VIEWER_MATCH = "address:0x2000"
 local TERM_ADDRESS = "0xdeadbeef"
 local TERM_WIDTH = 1600
 local TERM_HEIGHT = 900
@@ -59,13 +60,12 @@ end
 
 T["tells Quickshell to open the file on page 1 at the window width"] = function()
     local path = open_pdf()
-    local qs_config = child.lua_get([[require("quickpdf.config").options.qs_config]])
     eq(
         called("quickshell", {
             "quickshell",
             "ipc",
             "-p",
-            qs_config,
+            helpers.config_paths(child)[1],
             "call",
             "pdf",
             "open",
@@ -84,7 +84,7 @@ T["sizes and moves the viewer onto the terminal window"] = function()
             "hyprctl",
             "dispatch",
             "resizewindowpixel",
-            string.format("exact %d %d,%s", TERM_WIDTH, TERM_HEIGHT, TITLE_MATCH),
+            string.format("exact %d %d,%s", TERM_WIDTH, TERM_HEIGHT, VIEWER_MATCH),
         }),
         true
     )
@@ -93,7 +93,7 @@ T["sizes and moves the viewer onto the terminal window"] = function()
             "hyprctl",
             "dispatch",
             "movewindowpixel",
-            string.format("exact %d %d,%s", TERM_X, TERM_Y, TITLE_MATCH),
+            string.format("exact %d %d,%s", TERM_X, TERM_Y, VIEWER_MATCH),
         }),
         true
     )
@@ -106,30 +106,29 @@ end
 
 T["leaves a floating viewer alone"] = function()
     open_pdf()
-    eq(called("hyprctl", { "hyprctl", "dispatch", "togglefloating", TITLE_MATCH }), false)
+    eq(called("hyprctl", { "hyprctl", "dispatch", "togglefloating", VIEWER_MATCH }), false)
 end
 
 T["floats the viewer when the window rule is missing"] = function()
     open_pdf({ QUICKPDF_FAKE_VIEWER_FLOATING = "false" })
-    eq(called("hyprctl", { "hyprctl", "dispatch", "togglefloating", TITLE_MATCH }), true)
+    eq(called("hyprctl", { "hyprctl", "dispatch", "togglefloating", VIEWER_MATCH }), true)
 end
 
 T["spawns one detached daemon when none answers IPC"] = function()
     open_pdf({ QUICKPDF_FAKE_DAEMON_DEAD = 1 })
-    local qs_config = child.lua_get([[require("quickpdf.config").options.qs_config]])
     local spawns = {}
     for _, call in ipairs(helpers.calls(child, "quickshell")) do
-        if call[2] ~= "ipc" then
+        if call[2] ~= "ipc" and call[2] ~= "list" then
             table.insert(spawns, call)
         end
     end
-    eq(spawns, { { "quickshell", "-p", qs_config, "-d", "-n" } })
+    eq(spawns, { { "quickshell", "-p", helpers.config_paths(child)[1], "-d", "-n" } })
 end
 
 T["does not spawn a daemon when one already answers IPC"] = function()
     open_pdf()
     for _, call in ipairs(helpers.calls(child, "quickshell")) do
-        eq(call[2], "ipc")
+        eq(call[2] == "ipc" or call[2] == "list", true)
     end
 end
 
