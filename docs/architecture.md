@@ -82,10 +82,13 @@ flowchart TD
     viewer --> daemon
     viewer --> hyprland
     viewer --> config
+    viewer --> process
     ui[ui.lua<br/>placeholder, winbar, keymaps] --> config
     daemon[daemon.lua<br/>process lifecycle, IPC] --> config
-    hyprland[hyprland.lua<br/>hyprctl calls]
+    daemon --> process
+    hyprland[hyprland.lua<br/>hyprctl calls] --> process
     config[config.lua<br/>options]
+    process[process.lua<br/>runs external programs]
 ```
 
 `ui.lua` does not require `viewer.lua`: the viewer passes its actions to

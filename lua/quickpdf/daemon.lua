@@ -3,14 +3,13 @@
 -- detection and spawn polling stay in here.
 
 local config = require("quickpdf.config")
+local process = require("quickpdf.process")
 
 local M = {}
 
 local checked = false
 
-local function run(cmd)
-    return vim.system(cmd, { text = true }):wait()
-end
+local run = process.run
 
 local function qs_config()
     return config.options.qs_config
@@ -75,7 +74,7 @@ function M.ensure()
         return
     end
     kill_strays()
-    vim.system({ "quickshell", "-p", qs_config(), "-d", "-n" }, { detach = true })
+    process.spawn({ "quickshell", "-p", qs_config(), "-d", "-n" })
     for _ = 1, 20 do
         if M.alive() then
             checked = true
