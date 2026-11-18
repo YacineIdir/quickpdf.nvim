@@ -14,4 +14,5 @@ executables check the exact command line the real tool receives, and need no
 change to production code. What fakes cannot cover, `shell.qml` and the real
 IPC, is covered by an end-to-end job running Quickshell under headless Sway.
 
-Accepted on 2026-11-17, not implemented yet.
+Accepted on 2026-11-17, implemented by the `make test` harness
+(`tests/fakes/`, `tests/helpers.lua`).

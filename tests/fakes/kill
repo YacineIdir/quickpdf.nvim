@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Fake kill: records the signal and pids, kills nothing.
+
+set -euo pipefail
+source "$(dirname "$0")/_record.sh"
+quickpdf_record "$@"

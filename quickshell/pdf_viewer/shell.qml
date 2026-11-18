@@ -10,7 +10,10 @@ ShellRoot {
     // Target render width in px. nvim computes it (kitty width * zoom) so the
     // result never depends on when the compositor configures this window.
     property int targetWidth: 900
-    property string cacheDir: "/tmp/quickshell-pdf-cache"
+    // Render cache of this daemon, set by the Neovim instance that spawned
+    // it (one daemon per instance, ADR 0002). The fallback serves a daemon
+    // started by hand.
+    property string cacheDir: Quickshell.env("QUICKPDF_CACHE_DIR") || "/tmp/quickshell-pdf-cache"
 
     // Setting `running = true` on an already-running Process is a no-op, so
     // rapid n/n/z/z presses would drop renders. Mark dirty and re-run on exit.

@@ -1,0 +1,35 @@
+name: Release
+
+# release-please keeps a release pull request open on `main` with the next
+# version and its changelog. Merging it tags vX.Y.Z, writes CHANGELOG.md and
+# creates the GitHub Release (docs/adr/0005-branching-merging-and-releases.md).
+# Publishing to LuaRocks will join this workflow (#9): a tag pushed with
+# GITHUB_TOKEN does not start other workflows.
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: release-please
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@v5.0.0
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

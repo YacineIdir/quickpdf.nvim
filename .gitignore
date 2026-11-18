@@ -4,3 +4,6 @@
 node_modules/
 package.json
 package-lock.json
+
+# Test dependencies, cloned by `make deps`
+deps/

@@ -5,12 +5,13 @@
 local config = require("quickpdf.config")
 local daemon = require("quickpdf.daemon")
 local hyprland = require("quickpdf.hyprland")
+local process = require("quickpdf.process")
 local ui = require("quickpdf.ui")
 
 local M = {}
 
 local function page_count(path)
-    local res = vim.system({ "pdfinfo", path }, { text = true }):wait()
+    local res = process.run({ "pdfinfo", path })
     if res.code == 0 then
         local n = res.stdout:match("Pages:%s*(%d+)")
         if n then
@@ -46,17 +47,19 @@ function M.show(buf)
         vim.b[buf].quickpdf = st
     end
     daemon.call("open", st.path, st.page, target_width(st))
-    local qs = hyprland.wait_for_viewer(1500)
+    local qs = hyprland.wait_for_viewer(daemon.pid(), 1500)
     if not qs then
         -- Daemon alive but its window was destroyed (closed via the WM):
         -- `open` just toggles visibility on a dead window. Respawn, retry once.
         daemon.restart()
         daemon.call("open", st.path, st.page, target_width(st))
-        qs = hyprland.wait_for_viewer(1500)
+        qs = hyprland.wait_for_viewer(daemon.pid(), 1500)
     end
-    hyprland.ensure_floating(qs)
-    if win then
-        hyprland.cover(win)
+    if qs then
+        hyprland.ensure_floating(qs)
+        if win then
+            hyprland.cover(qs, win)
+        end
     end
     hyprland.focus(st.term_addr)
     -- Without the `no_focus` windowrule Hyprland hands focus to the new
@@ -92,24 +95,42 @@ end
 -- One entry per key of `config.options.keymaps`.
 M.actions = {
     next_page = function(buf)
-        update(buf, function(st) st.page = math.min(st.total, st.page + 1) end)
+        update(buf, function(st)
+            st.page = math.min(st.total, st.page + 1)
+        end)
     end,
     prev_page = function(buf)
-        update(buf, function(st) st.page = math.max(1, st.page - 1) end)
+        update(buf, function(st)
+            st.page = math.max(1, st.page - 1)
+        end)
     end,
     zoom_in = function(buf)
-        update(buf, function(st) st.scale = st.scale + config.options.zoom_step end)
+        update(buf, function(st)
+            st.scale = st.scale + config.options.zoom_step
+        end)
     end,
     zoom_out = function(buf)
-        update(buf, function(st) st.scale = math.max(config.options.min_zoom, st.scale - config.options.zoom_step) end)
+        update(buf, function(st)
+            st.scale = math.max(config.options.min_zoom, st.scale - config.options.zoom_step)
+        end)
     end,
     zoom_reset = function(buf)
-        update(buf, function(st) st.scale = 1.0 end)
+        update(buf, function(st)
+            st.scale = 1.0
+        end)
     end,
-    pan_left = function(buf) pan(buf, -1, 0) end,
-    pan_right = function(buf) pan(buf, 1, 0) end,
-    pan_up = function(buf) pan(buf, 0, -1) end,
-    pan_down = function(buf) pan(buf, 0, 1) end,
+    pan_left = function(buf)
+        pan(buf, -1, 0)
+    end,
+    pan_right = function(buf)
+        pan(buf, 1, 0)
+    end,
+    pan_up = function(buf)
+        pan(buf, 0, -1)
+    end,
+    pan_down = function(buf)
+        pan(buf, 0, 1)
+    end,
 }
 
 -- Take over a freshly read *.pdf buffer and show it.

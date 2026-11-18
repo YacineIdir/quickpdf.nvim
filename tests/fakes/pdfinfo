@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Fake poppler pdfinfo: reports $QUICKPDF_FAKE_PAGES pages.
+
+set -euo pipefail
+source "$(dirname "$0")/_record.sh"
+quickpdf_record "$@"
+
+printf 'Pages:          %s\n' "${QUICKPDF_FAKE_PAGES:-1}"

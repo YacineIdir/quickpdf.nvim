@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Fake pgrep: no stray process matches, so nothing is ever killed.
+
+set -euo pipefail
+source "$(dirname "$0")/_record.sh"
+quickpdf_record "$@"
+
+exit 1

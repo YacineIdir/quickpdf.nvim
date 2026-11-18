@@ -1,0 +1,62 @@
+%PDF-1.4
+% Four 200x200 pt pages, each with a wider blue bar, for tests/test_render_e2e.lua.
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 5 0 R 7 0 R 9 0 R] /Count 4 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 26 >>
+stream
+0 0 1 rg 20 20 40 160 re f
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 26 >>
+stream
+0 0 1 rg 20 20 80 160 re f
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 27 >>
+stream
+0 0 1 rg 20 20 120 160 re f
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Contents 10 0 R >>
+endobj
+10 0 obj
+<< /Length 27 >>
+stream
+0 0 1 rg 20 20 160 160 re f
+endstream
+endobj
+xref
+0 11
+0000000000 65535 f 
+0000000093 00000 n 
+0000000142 00000 n 
+0000000217 00000 n 
+0000000304 00000 n 
+0000000380 00000 n 
+0000000467 00000 n 
+0000000543 00000 n 
+0000000630 00000 n 
+0000000707 00000 n 
+0000000795 00000 n 
+trailer
+<< /Size 11 /Root 1 0 R >>
+startxref
+873
+%%EOF

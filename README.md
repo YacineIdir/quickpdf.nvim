@@ -159,6 +159,7 @@ Code layout:
 | `lua/quickpdf/ui.lua`             | Placeholder buffer, winbar, keymaps      |
 | `lua/quickpdf/daemon.lua`         | Quickshell process lifecycle and IPC     |
 | `lua/quickpdf/hyprland.lua`       | `hyprctl` calls: geometry and focus      |
+| `lua/quickpdf/process.lua`        | Runs every external program              |
 | `quickshell/pdf_viewer/shell.qml` | Viewer window, rendering, `pdf` IPC      |
 
 ## Limitations
@@ -199,11 +200,32 @@ Issues and pull requests are welcome. Planned work is tracked on the
 Development happens on `develop`; `main` holds released versions. Name
 branches `<type>/<short-description>` (`feature/`, `fix/`, `docs/`,
 `refactor/`, `chore/`) and write commits as
-`<type>(<scope>): <description>` in English.
+`<type>(<scope>): <description>` in English. Pull requests into `develop`
+are squash-merged, so the PR title becomes the commit message: CI fails a
+title that does not follow the same format.
 
 To work on the plugin, point your plugin manager at your local clone (for
 lazy.nvim, `{ dir = "~/path/to/quickpdf.nvim", opts = {} }`) and restart
 Neovim after each change.
+
+### Tests
+
+```bash
+make test                          # whole suite
+make test TESTS=tests/test_ui.lua  # one file
+```
+
+`make test` clones [mini.nvim](https://github.com/echasnovski/mini.nvim)
+into `deps/` on first run and executes every `tests/test_*.lua` in a headless
+child Neovim. It needs neither Hyprland nor Quickshell: `tests/fakes/` puts
+stand-ins for `hyprctl`, `quickshell`, `pdfinfo`, `pgrep` and `kill` first on
+`PATH`, each recording the exact command line it receives so tests can assert
+it. The command exits non-zero as soon as one case fails.
+
+`tests/test_render_e2e.lua` is the exception: it renders real pages with the
+real Quickshell daemon, run headless (`QT_QPA_PLATFORM=offscreen`), and the
+real `pdftoppm`. Only `hyprctl` stays fake. Its cases are skipped when
+`quickshell` or `poppler-utils` is not installed.
 
 ## License
 

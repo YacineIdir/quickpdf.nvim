@@ -1,0 +1,7 @@
+---
+# selene standard library: Lua 5.1 (LuaJIT) plus Neovim's `vim` global.
+base: lua51
+name: vim
+globals:
+  vim:
+    any: true
