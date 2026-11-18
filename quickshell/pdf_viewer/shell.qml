@@ -18,6 +18,12 @@ ShellRoot {
     property real viewRatioX: 0.5
     property real viewRatioY: 0
 
+    // Commands of the render in progress that have not run yet.
+    property var renderSteps: []
+
+    // A render is a few programs run one after another, each given as an
+    // argument list. No shell ever sees the PDF path, so quotes, spaces and
+    // `$(...)` in a file name stay plain characters.
     function renderPage(): void {
         if (root.pdfPath === "")
             return;
@@ -26,21 +32,34 @@ ShellRoot {
             return;
         }
 
-        const targetWidth = Math.max(100, root.targetWidth);
-        renderProc.command = ["sh", "-c",
-            "mkdir -p '" + root.cacheDir + "' && " +
-            "rm -f '" + root.cacheDir + "'/page-*.png && " +
-            "pdftoppm -png -f " + root.page + " -l " + root.page +
-            " -scale-to-x " + targetWidth + " -scale-to-y -1" +
-            " '" + root.pdfPath + "' '" + root.cacheDir + "/page' && " +
-            "mv '" + root.cacheDir + "'/page-*.png '" + root.cacheDir + "/page.png'"
+        const page = String(root.page);
+        const next = root.cacheDir + "/next";
+        root.renderSteps = [
+            ["mkdir", "-p", root.cacheDir],
+            ["pdftoppm", "-png", "-singlefile", "-f", page, "-l", page,
+                "-scale-to-x", String(Math.max(100, root.targetWidth)), "-scale-to-y", "-1",
+                root.pdfPath, next],
+            // Rename, so the Image never loads a half-written page.png.
+            ["mv", "-f", next + ".png", root.cacheDir + "/page.png"]
         ];
+        root.runNextStep();
+    }
+
+    function runNextStep(): void {
+        const steps = root.renderSteps;
+        root.renderSteps = steps.slice(1);
+        renderProc.command = steps[0];
         renderProc.running = true;
     }
 
     Process {
         id: renderProc
         onExited: (exitCode, exitStatus) => {
+            if (exitCode === 0 && root.renderSteps.length > 0) {
+                root.runNextStep();
+                return;
+            }
+            root.renderSteps = [];
             // Remember where the viewport is (as a ratio) so a zoom re-render
             // keeps the same region on screen instead of snapping to the corner.
             const maxX = flick.contentWidth - flick.width;
