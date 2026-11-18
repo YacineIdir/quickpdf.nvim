@@ -93,24 +93,42 @@ end
 -- One entry per key of `config.options.keymaps`.
 M.actions = {
     next_page = function(buf)
-        update(buf, function(st) st.page = math.min(st.total, st.page + 1) end)
+        update(buf, function(st)
+            st.page = math.min(st.total, st.page + 1)
+        end)
     end,
     prev_page = function(buf)
-        update(buf, function(st) st.page = math.max(1, st.page - 1) end)
+        update(buf, function(st)
+            st.page = math.max(1, st.page - 1)
+        end)
     end,
     zoom_in = function(buf)
-        update(buf, function(st) st.scale = st.scale + config.options.zoom_step end)
+        update(buf, function(st)
+            st.scale = st.scale + config.options.zoom_step
+        end)
     end,
     zoom_out = function(buf)
-        update(buf, function(st) st.scale = math.max(config.options.min_zoom, st.scale - config.options.zoom_step) end)
+        update(buf, function(st)
+            st.scale = math.max(config.options.min_zoom, st.scale - config.options.zoom_step)
+        end)
     end,
     zoom_reset = function(buf)
-        update(buf, function(st) st.scale = 1.0 end)
+        update(buf, function(st)
+            st.scale = 1.0
+        end)
     end,
-    pan_left = function(buf) pan(buf, -1, 0) end,
-    pan_right = function(buf) pan(buf, 1, 0) end,
-    pan_up = function(buf) pan(buf, 0, -1) end,
-    pan_down = function(buf) pan(buf, 0, 1) end,
+    pan_left = function(buf)
+        pan(buf, -1, 0)
+    end,
+    pan_right = function(buf)
+        pan(buf, 1, 0)
+    end,
+    pan_up = function(buf)
+        pan(buf, 0, -1)
+    end,
+    pan_down = function(buf)
+        pan(buf, 0, 1)
+    end,
 }
 
 -- Take over a freshly read *.pdf buffer and show it.

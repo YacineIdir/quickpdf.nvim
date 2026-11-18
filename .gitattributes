@@ -1,3 +1,6 @@
+# Same line endings on every OS, so stylua and the CI see identical files.
+* text=auto eol=lf
+
 # Keep contributor docs on GitHub but out of downloaded archives.
 /docs export-ignore
 /GLOSSARY.md export-ignore
