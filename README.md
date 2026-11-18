@@ -206,6 +206,11 @@ To work on the plugin, point your plugin manager at your local clone (for
 lazy.nvim, `{ dir = "~/path/to/quickpdf.nvim", opts = {} }`) and restart
 Neovim after each change.
 
+Every pull request from this repository gets an automated review by Claude,
+as inline comments plus one summary. Maintainers can ask it follow-up
+questions by mentioning `@claude` in a comment. Pull requests from forks are
+reviewed when a maintainer mentions `@claude` in the conversation.
+
 ### Tests
 
 ```bash
